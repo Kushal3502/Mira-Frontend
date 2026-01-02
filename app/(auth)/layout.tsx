@@ -6,12 +6,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className=" mt-14 border-t border-dashed">
+    <div className=" ">
       <Navbar />
 
-      <main className="grid grid-cols-14">
+      <main className="grid grid-cols-14 pt-14">
         <section className=" col-span-1 py-3" />
-        <section className=" col-span-12 border-x-2">{children}</section>
+        <section className=" col-span-12 border-x border-zinc-700 min-h-screen">
+          {children}
+        </section>
         <section className="col-span-1 py-3" />
       </main>
     </div>
