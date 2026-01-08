@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 import { Button } from "./ui/button";
 
 function Navbar() {
@@ -13,7 +12,7 @@ function Navbar() {
       >
         {/* <div className="flex items-center gap-6"> */}
         <Link href="/" className="text-xl font-semibold">
-          Logo
+          {`<Mira>`}
         </Link>
 
         <ul className="flex gap-4">
@@ -30,8 +29,16 @@ function Navbar() {
         {/* </div> */}
 
         <div>
-          <Button variant={"secondary"} className={"mr-2"}>Dashboard</Button>
-          <Button>Sign In</Button>
+          <Link href="/dashboard">
+            <Button variant={"outline"} className={"mr-2"}>
+              Dashboard
+            </Button>
+          </Link>
+          <Link href="/login">
+            <Button className={"mr-2"}>
+              Sign In
+            </Button>
+          </Link>
         </div>
       </nav>
 

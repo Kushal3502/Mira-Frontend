@@ -1,11 +1,47 @@
-import React from "react";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
+"use client";
+
+import api from "@/lib/axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { TbLoader } from "react-icons/tb";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 function RegisterForm() {
-  async function handleSubmit() {}
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+
+      const data = {
+        fullName: formData.get("fullName"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+      };
+
+      const response = await api.post("/auth/register", data);
+
+      if (response.data.success) {
+        console.log(response.data);
+        toast.success(response.data.message);
+        localStorage.setItem("email", response.data.data.email);
+        router.push("/verify");
+      }
+    } catch (error) {
+      console.error("Resgistration error :: ", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <form
@@ -20,10 +56,11 @@ function RegisterForm() {
       {/* Name */}
       <div className="space-y-2">
         <Label htmlFor="fullName" className="text-sm font-medium">
-          Full Name
+          Full Name <span className="text-red-600">*</span>
         </Label>
         <Input
           id="fullName"
+          name="fullName"
           placeholder="John Doe"
           required
           className="focus-visible:ring-2 focus-visible:ring-primary"
@@ -33,10 +70,11 @@ function RegisterForm() {
       {/* Email */}
       <div className="space-y-2">
         <Label htmlFor="email" className="text-sm font-medium">
-          Email
+          Email<span className="text-red-600">*</span>
         </Label>
         <Input
           id="email"
+          name="email"
           type="email"
           placeholder="john@example.com"
           required
@@ -47,10 +85,11 @@ function RegisterForm() {
       {/* Password */}
       <div className="space-y-2">
         <Label htmlFor="password" className="text-sm font-medium">
-          Password
+          Password<span className="text-red-600">*</span>
         </Label>
         <Input
           id="password"
+          name="password"
           type="password"
           placeholder="••••••••"
           required
@@ -59,8 +98,8 @@ function RegisterForm() {
       </div>
 
       {/* Submit */}
-      <Button type="submit" className="w-full">
-        Register
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading ? <TbLoader className=" animate-spin" /> : "Register"}
       </Button>
 
       {/* Footer */}

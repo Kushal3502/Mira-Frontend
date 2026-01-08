@@ -1,16 +1,50 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import api from "@/lib/axios";
+import { toast } from "sonner";
+import { TbLoader } from "react-icons/tb";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { login } from "@/store/features/authSlice";
 
 function LoginForm() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log("Submitted");
-  };
+    setLoading(true);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+
+      const data = {
+        email: formData.get("email"),
+        password: formData.get("password"),
+      };
+
+      const response = await api.post("/auth/login", data);
+
+      if (response.data.success) {
+        console.log(response.data);
+        toast.success(response.data.message);
+        dispatch(login(response.data.data));
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Login error :: ", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <form
@@ -32,6 +66,7 @@ function LoginForm() {
         <Input
           id="email"
           type="email"
+          name="email"
           placeholder="john@example.com"
           required
           className="focus-visible:ring-2 focus-visible:ring-primary"
@@ -46,6 +81,7 @@ function LoginForm() {
         <Input
           id="password"
           type="password"
+          name="password"
           placeholder="••••••••"
           required
           className="focus-visible:ring-2 focus-visible:ring-primary"
@@ -63,8 +99,8 @@ function LoginForm() {
       </div>
 
       {/* Submit */}
-      <Button type="submit" className="w-full">
-        Sign In
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading ? <TbLoader className=" animate-spin" /> : "Sign In"}
       </Button>
 
       {/* Footer */}
