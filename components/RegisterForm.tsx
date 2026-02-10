@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { authUrl } from "@/config/api";
 
 function RegisterForm() {
   const router = useRouter();
@@ -28,7 +29,7 @@ function RegisterForm() {
         password: formData.get("password"),
       };
 
-      const response = await api.post("/auth/register", data);
+      const response = await api.post(authUrl.register, data);
 
       if (response.data.success) {
         console.log(response.data);

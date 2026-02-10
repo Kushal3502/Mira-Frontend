@@ -1,54 +1,47 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import api from "@/lib/axios";
-import { toast } from "sonner";
-import { TbLoader } from "react-icons/tb";
-import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
-import { login } from "@/store/features/authSlice";
+import { authUrl } from '@/config/api';
+import api from '@/lib/axios';
+import Link from 'next/link';
+import { useState } from 'react';
+import { TbLoader } from 'react-icons/tb';
+import { toast } from 'sonner';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 
 function LoginForm() {
-  const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
-
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const handlelogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setLoading(true);
+    setError(null);
 
     try {
-      const formData = new FormData(e.currentTarget);
-
-      const data = {
-        email: formData.get("email"),
-        password: formData.get("password"),
-      };
-
-      const response = await api.post("/auth/login", data);
+      const response = await api.post(authUrl.login, formData);
 
       if (response.data.success) {
-        console.log(response.data);
-        toast.success(response.data.message);
-        dispatch(login(response.data.data));
-        router.push("/dashboard");
+        console.log(response);
+        toast.success('Loggin successful');
       }
     } catch (error) {
-      console.error("Login error :: ", error);
+      console.log('login error :: ', error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handlelogin}
       className="w-full max-w-md space-y-2 border bg-background p-6 shadow-sm"
     >
       <div className="text-center space-y-2 border-b pb-2">
@@ -100,12 +93,12 @@ function LoginForm() {
 
       {/* Submit */}
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? <TbLoader className=" animate-spin" /> : "Sign In"}
+        {loading ? <TbLoader className=" animate-spin" /> : 'Sign In'}
       </Button>
 
       {/* Footer */}
       <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
+        Don&apos;t have an account?{' '}
         <Link
           href="/register"
           className="font-medium text-primary hover:underline"

@@ -1,7 +1,6 @@
 "use client";
 
 import VerifyForm from "@/components/VerifyForm";
-import React from "react";
 
 function VerifyEmail() {
   return (

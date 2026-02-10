@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { toast } from "sonner";
 import { TbLoader } from "react-icons/tb";
+import { authUrl } from "@/config/api";
 
 function VerifyForm() {
   const email = localStorage.getItem("email");
@@ -78,7 +79,7 @@ function VerifyForm() {
         token: code,
       };
 
-      const response = await api.post("/auth/verify", data);
+      const response = await api.post(authUrl.verify, data);
 
       if (response.data.success) {
         toast.success(response.data.message);
